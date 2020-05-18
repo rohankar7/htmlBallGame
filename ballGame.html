@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>Simple Game</title>
+        <meta charset="UTF-8"/>
+    </head>
+    <body onload="preload()">
+        <canvas id="game" width="640" height="480"></canvas>
+        <div id="scores"></div>
+        <script type="text/javascript">
+            var canvas,context;
+            var p1y=p2y=40;
+            var pt=10,ph=100;
+            var bx=by=50,xVel=yVel=4;
+            var paddleOffset=0;
+            var score1=0,score2=0;
+            const plankVel=10;
+            var plank1moves=false;
+            var plank2moves=false;
+            bd=8;
+            function preload(){
+                displayScores=document.getElementById("scores");
+                canvas=document.getElementById("game");
+                context=canvas.getContext("2d");
+                setInterval(update,1000/60);
+                window.addEventListener("keydown", event => {
+                    if(event.key == "w"){
+                        if(p1y-plankVel>=0){
+                            p1y-=plankVel;
+                            plank1moves=true;
+                        }
+                    }
+                    else if(event.key == "s"){
+                        if(p1y+ph+plankVel<=480){
+                            p1y+=plankVel;
+                            plank1moves=true;
+                        }
+                    }
+                    if(event.key == "e"){
+                        if(p2y-plankVel>=0){
+                            p2y-=plankVel;
+                            plank2moves=true;
+                        }
+                    }
+                    else if(event.key == "d"){
+                        if(p2y+ph+plankVel<=480){
+                            p2y+=plankVel;
+                            plank2moves=true;
+                        }
+                    }
+                });
+                window.addEventListener("keyup", event => {
+                    if (event.key == "w" || event.key == "s") {
+                        p1y=p1y;
+                        plank1moves=false;
+
+                    }
+                    if (event.key == "e" || event.key == "d") {
+                        p2y=p2y;
+                        plank2moves=false;
+                    }
+                });
+                displayScores.innerHTML="PLAYER1 "+score1+"---------------------------------------------------"+"PLAYER2 "+score2;
+            }
+            function update(){
+                context.fillStyle="black";
+                context.fillRect(0,0,canvas.width,canvas.height);
+                context.fillStyle="white";
+                context.fillRect(1,p1y,pt,ph);
+                context.fillRect(canvas.width-pt-1,p2y,pt,ph);
+                bx+=xVel;
+                by+=yVel;
+                if(by>canvas.height){
+                    yVel=-4;
+                }
+                else if(by<0){
+                    yVel=4;
+                }
+                if(bx>canvas.width || bx<0){
+                    if(bx<0){
+                        ++score2;
+                    }
+                    else{
+                        ++score1;
+                    }
+                    xVel=-xVel;
+                }
+                    displayScores.innerHTML="PLAYER1 "+score1+"---------------------------------------------------"+"PLAYER2 "+score2;
+                //ball hits plank1
+                if(by<p1y+ph && by>p1y){
+                    if(bx-bd/2<pt){
+                        xVel=-xVel;
+                    }
+                }
+                else if(by<p1y && by+bd>=p1y && !plank1moves){
+                    if(bx<=pt){
+                        yVel=-yVel;
+                    }
+                }
+                else if(by+bd>p1y+ph && by-bd/2<=p1y+ph && !plank1moves){
+                    if(bx<=pt){
+                        yVel=-yVel;
+                    }
+                }
+                else if(by-bd/2<p1y-plankVel && by+bd>=p1y-plankVel && plank1moves){
+                    if(bx<=pt){
+                        yVel=-yVel-plankVel;
+                    }
+                }
+                else if(by+bd>p1y+ph+plankVel && by-bd/2<=p1y+ph+plankVel && plank1moves){
+                    if(bx<=pt){
+                        yVel=-yVel+plankVel;
+                    }
+                }
+                //ball hits plank2
+                if(by<p2y+ph && by>p2y){
+                    if(bx+bd/2>canvas.width-pt){
+                        xVel=-xVel;
+                    }
+                }
+                else if(by-bd/2<p2y && by+bd>p2y && !plank2moves){
+                    if(bx+bd/2>=canvas.width-pt){
+                        yVel=-yVel;
+                    }
+                }
+                else if(by+bd>p2y+ph && by-bd/2<p2y+ph && !plank2moves){
+                    if(bx+bd/2>=canvas.width-pt){
+                        yVel=-yVel;
+                    }
+                }
+                else if(by-bd/2<p2y-plankVel && by+bd>p2y-plankVel && plank2moves){
+                    if(bx+bd/2>=canvas.width-pt){
+                        yVel=-yVel-plankVel;
+                    }
+                }
+                else if(by+bd>p2y+ph+plankVel && by-bd/2<p2y+ph+plankVel && plank2moves){
+                    if(bx+bd/2>=canvas.width-pt){
+                        yVel=-yVel+plankVel;
+                    }
+                }
+                context.fillRect(bx-bd/2,by-bd/2,bd,bd);  
+            }
+        </script>
+    </body>
+</html>
